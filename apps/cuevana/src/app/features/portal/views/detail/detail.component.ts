@@ -1,11 +1,13 @@
+import { DatePipe, SlicePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { MovieService } from '@cuevana-commons';
+import { MovieService, RuntimePipe } from '@cuevana-commons';
 
 @Component({
   selector: 'app-detail',
   templateUrl: './detail.component.html',
-  styleUrls: ['./detail.component.scss']
+  styleUrls: ['./detail.component.scss'],
+  imports: [SlicePipe, DatePipe, RuntimePipe]
 })
 export class PortalDetailComponent implements OnInit {
   movie: any = {};

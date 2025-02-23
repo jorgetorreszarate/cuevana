@@ -1,11 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MovieService } from '@cuevana-commons';
+import { ListMoviesComponent } from '../../../../commons/components';
 
 @Component({
   selector: 'app-portal-search',
   templateUrl: './search.component.html',
-  styleUrls: ['./search.component.scss']
+  styleUrls: ['./search.component.scss'],
+  imports: [ListMoviesComponent]
 })
 export class PortalSearchComponent implements OnInit, OnDestroy {
   keywords: string;

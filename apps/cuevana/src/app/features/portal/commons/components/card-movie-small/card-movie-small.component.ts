@@ -1,16 +1,13 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { Component, input, Input } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-card-movie-small',
   templateUrl: './card-movie-small.component.html',
-  styleUrls: ['./card-movie-small.component.scss']
+  styleUrls: ['./card-movie-small.component.scss'],
+  imports: [RouterLink, DatePipe]
 })
-export class CardMovieSmallComponent implements OnInit {
-  @Input() movie: any = {};
-
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+export class CardMovieSmallComponent {
+  readonly movie = input<any>({});
 }

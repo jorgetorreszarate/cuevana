@@ -16,13 +16,16 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/cuevana",
-            "resourcesOutputPath": "resources",
+            "outputPath": {
+              "base": "dist/cuevana",
+              "media": "resources"
+            },
             "index": "apps/cuevana/src/index.html",
-            "main": "apps/cuevana/src/main.ts",
-            "polyfills": "apps/cuevana/src/polyfills.ts",
+            "polyfills": [
+              "apps/cuevana/src/polyfills.ts"
+            ],
             "tsConfig": "apps/cuevana/tsconfig.app.json",
             "assets": [
               "apps/cuevana/src/favicon.ico",
@@ -35,12 +38,16 @@
               "./node_modules/@popperjs/core/dist/umd/popper.min.js",
               "./node_modules/bootstrap/dist/js/bootstrap.min.js"
             ],
-            "vendorChunk": true,
+            "stylePreprocessorOptions": {
+              "sass": {
+                "silenceDeprecations": ["mixed-decls", "color-functions", "global-builtin", "import"]
+              }
+            },
             "extractLicenses": false,
-            "buildOptimizer": false,
             "sourceMap": true,
             "optimization": false,
-            "namedChunks": true
+            "namedChunks": true,
+            "browser": "apps/cuevana/src/main.ts"
           },
           "configurations": {
             "production": {
@@ -55,8 +62,6 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -76,18 +81,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "cuevana:build"
+            "buildTarget": "cuevana:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "cuevana:build:production"
+              "buildTarget": "cuevana:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "cuevana:build"
+            "buildTarget": "cuevana:build"
           }
         },
         "test": {

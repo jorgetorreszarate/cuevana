@@ -3,13 +3,14 @@ import { HttpParams } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MovieService } from '@cuevana-commons';
-import { Observable } from 'rxjs';
 import { delay } from 'rxjs/operators';
+import { ListMoviesComponent } from '../../../../commons/components';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  styleUrls: ['./home.component.scss'],
+  imports: [ListMoviesComponent]
 })
 export class HomeComponent implements OnInit {
   tagActive: string = 'popular';
@@ -67,6 +68,6 @@ export class HomeComponent implements OnInit {
     console.log(tag);
     this.tagActive = tag;
     this.goToPage(1);
-  }  
+  }
 
 }

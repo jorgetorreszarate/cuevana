@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { GeneralService } from './commons/services/general.service';
+import { ActivatedRoute, RouterOutlet } from '@angular/router';
+import { FooterComponent, HeaderComponent } from './commons/components';
+import { GeneralService } from './commons/services';
 
 @Component({
   selector: 'app-portal',
   templateUrl: './portal.component.html',
-  styleUrls: ['./portal.component.scss']
+  styleUrls: ['./portal.component.scss'],
+  imports: [HeaderComponent, RouterOutlet, FooterComponent]
 })
 export class PortalComponent implements OnInit {
 

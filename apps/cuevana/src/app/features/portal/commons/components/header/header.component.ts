@@ -1,14 +1,16 @@
-import { Component, ElementRef, HostBinding, HostListener, OnInit, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { NavigationStart, Router, Event, ActivatedRoute } from '@angular/router';
-import { MovieService } from '@cuevana-commons';
+import { Component, OnInit } from '@angular/core';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, Event, NavigationStart, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { ClickOutDirective, MovieService } from '@cuevana-commons';
 import { of } from 'rxjs';
-import { map, filter, debounceTime, distinctUntilChanged, switchMap, catchError, tap } from 'rxjs/operators';
+import { catchError, debounceTime, distinctUntilChanged, filter, map, switchMap, tap } from 'rxjs/operators';
+import { CardMovieSmallComponent } from '../card-movie-small/card-movie-small.component';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss']
+  styleUrls: ['./header.component.scss'],
+  imports: [RouterLink, ClickOutDirective, FormsModule, ReactiveFormsModule, CardMovieSmallComponent, RouterLinkActive]
 })
 export class HeaderComponent implements OnInit {
   searchControl = new FormControl();

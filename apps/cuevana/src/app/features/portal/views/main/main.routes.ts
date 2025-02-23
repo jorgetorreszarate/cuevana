@@ -1,5 +1,4 @@
-import { NgModule } from "@angular/core";
-import { RouterModule, Routes } from "@angular/router";
+import { Routes } from "@angular/router";
 import { AuthenticatedGuard } from "@cuevana-commons";
 import { PortalMainComponent } from "./main.component";
 import { PortalAdultsComponent } from "./views/adults/adults.component";
@@ -7,7 +6,7 @@ import { PortalCategoryComponent } from "./views/category/category.component";
 import { HomeComponent } from "./views/home/home.component";
 import { PortalSearchComponent } from "./views/search/search.component";
 
-const routes: Routes = [
+export const routes: Routes = [
   {
     path: '',
     component: PortalMainComponent,
@@ -32,9 +31,3 @@ const routes: Routes = [
     ]
   }
 ];
-
-@NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
-})
-export class PortalMainRoutingModule { }

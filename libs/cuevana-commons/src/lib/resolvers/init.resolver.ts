@@ -1,13 +1,9 @@
-import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/router';
+import { inject } from '@angular/core';
+import { ResolveFn } from '@angular/router';
 import { MovieService } from '../http/movies.service';
 
-@Injectable()
-export class InitResolver implements Resolve<any>{
-    constructor(private movieService: MovieService) { }
+export const InitResolver: ResolveFn<any> = () => {
+    const movieService = inject(MovieService);
 
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-        return this.movieService.genres();
-    }
-
+    return movieService.genres();
 }

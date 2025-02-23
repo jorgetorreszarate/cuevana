@@ -1,11 +1,15 @@
+import { DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { RouterLink, RouterOutlet } from '@angular/router';
 import { MovieService } from '@cuevana-commons';
 import { delay } from 'rxjs';
+import { CardMovieSmallComponent, SkeletonComponent } from '../../commons/components';
 
 @Component({
   selector: 'app-portal-main',
   templateUrl: './main.component.html',
-  styleUrls: ['./main.component.scss']
+  styleUrls: ['./main.component.scss'],
+  imports: [RouterLink, SkeletonComponent, RouterOutlet, CardMovieSmallComponent, DatePipe]
 })
 export class PortalMainComponent implements OnInit {
   trending = [];
@@ -15,9 +19,7 @@ export class PortalMainComponent implements OnInit {
 
   constructor(
     private movieService: MovieService
-  ) {
-    
-  }
+  ) { }
 
   ngOnInit() {
     this.trendingMovies();

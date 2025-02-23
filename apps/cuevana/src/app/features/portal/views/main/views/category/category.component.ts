@@ -3,12 +3,14 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MovieService } from '@cuevana-commons';
 import { delay } from 'rxjs';
-import { GeneralService } from '../../../../commons/services/general.service';
+import { ListMoviesComponent } from '../../../../commons/components';
+import { GeneralService } from '../../../../commons/services';
 
 @Component({
   selector: 'app-category',
   templateUrl: './category.component.html',
-  styleUrls: ['./category.component.scss']
+  styleUrls: ['./category.component.scss'],
+  imports: [ListMoviesComponent]
 })
 export class PortalCategoryComponent implements OnInit {
   id: number;
