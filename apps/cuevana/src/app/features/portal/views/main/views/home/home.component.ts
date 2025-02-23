@@ -1,9 +1,9 @@
 import { Location } from '@angular/common';
 import { HttpParams } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MovieService } from '@cuevana-commons';
-import { delay } from 'rxjs/operators';
+import { delay, finalize } from 'rxjs/operators';
 import { ListMoviesComponent } from '../../../../commons/components';
 
 @Component({
@@ -13,15 +13,13 @@ import { ListMoviesComponent } from '../../../../commons/components';
   imports: [ListMoviesComponent]
 })
 export class HomeComponent implements OnInit {
-  tagActive: string = 'popular';
-  popular: any = {};
-  isLoadingPopular = false;
+  readonly tagActive = signal<string>('popular');
+  readonly popular = signal<any>({});
+  readonly isLoadingPopular = signal<boolean>(false);
 
-  constructor(
-    private location: Location,
-    private activatedRoute: ActivatedRoute,
-    private movieService: MovieService
-  ) { }
+  readonly location = inject(Location);
+  readonly activatedRoute = inject(ActivatedRoute);
+  readonly movieService = inject(MovieService);
 
   ngOnInit() {
     const page = +this.activatedRoute.snapshot.queryParamMap.get('page');
@@ -29,44 +27,43 @@ export class HomeComponent implements OnInit {
   }
 
   previousPage(): void {
-    if (this.popular.page > 1) {
-      this.goToPage(this.popular.page - 1);
+    const { page } = this.popular();
+    if (page > 1) {
+      this.goToPage(page - 1);
     }
   }
 
   nextPage(): void {
-    if (this.popular.page < this.popular.total_pages) {
-      this.goToPage(this.popular.page + 1);
+    const { page, total_pages } = this.popular();
+    if (page < total_pages) {
+      this.goToPage(page + 1);
     }
   }
 
   goToPage(page: number): void {
-    this.isLoadingPopular = true;
+    this.isLoadingPopular.set(true);
 
     // Ejecución dinámica de un método
-    this.movieService[this.tagActive](page)
+    this.movieService[this.tagActive()](page)
       .pipe(
-        delay(2000)
+        delay(2000),
+        finalize(() => this.isLoadingPopular.set(false))
       )
       .subscribe({
         next: res => {
-          this.popular = res;
+          this.popular.set(res);
           let params = new HttpParams();
           if (page > 1) {
             params = params.set('page', page);
           }
 
           this.location.go('/', params.toString());
-
-          this.isLoadingPopular = false;
-        },
-        error: () => this.isLoadingPopular = false
+        }
       });
   }
 
   goToTag(tag: string): void {
-    console.log(tag);
-    this.tagActive = tag;
+    this.tagActive.set(tag);
     this.goToPage(1);
   }
 

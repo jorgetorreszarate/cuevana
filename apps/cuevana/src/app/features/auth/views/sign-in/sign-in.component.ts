@@ -1,6 +1,7 @@
-import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { ChangeDetectorRef, Component, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { delay, of } from 'rxjs';
 
 @Component({
   selector: 'app-sign-in',
@@ -9,17 +10,20 @@ import { Router } from '@angular/router';
   imports: [FormsModule, ReactiveFormsModule]
 })
 export class AuthSignInComponent implements OnInit {
-  form: UntypedFormGroup;
-  isValid: boolean;
-  isLoading: boolean;
-  @ViewChild('pwdInput', { static: false }) pwdInput: ElementRef;
+  form: FormGroup;
+  readonly isValid = signal<boolean>(false);
+  readonly isLoading = signal<boolean>(false);
+  readonly pwdInput = viewChild<ElementRef>('pwdInput');
 
-  constructor(
-    private fb: UntypedFormBuilder,
-    // private sesionService: SesionService,
-    private router: Router,
-    private cRef: ChangeDetectorRef
-  ) {
+  readonly fb = inject(FormBuilder);
+  readonly router = inject(Router);
+  readonly cRef = inject(ChangeDetectorRef);
+
+  constructor() {
+    this.builder();
+  }
+
+  builder(): void {
     this.form = this.fb.group({
       tipodoc: ['DNI', Validators.required],
       numdoc: [null, [Validators.required, Validators.minLength(8)]],
@@ -28,34 +32,36 @@ export class AuthSignInComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.isLoading = false;
-
+    this.isLoading.set(false);
   }
 
-  validar() {
-    if (this.isValid) {
+  validate(): void {
+    if (this.isValid()) {
       const values = this.form.value;
       // console.log(values);
-      this.isLoading = true;
-      setTimeout(() => {
-        // this.sesionService.create(values.numdoc);
-        this.router.navigateByUrl('/');
-      }, 500);
+      this.isLoading.set(true);
+
+      of(null)
+        .pipe(delay(500))
+        .subscribe(() => {
+          this.router.navigateByUrl('/');
+        });
     }
+
     if (this.form.valid) {
       // Consultar a la base de datos que el dni existe
-      this.isValid = true;
+      this.isValid.set(true);
 
       // Pasamos el focus al password
       this.cRef.detectChanges();
-      this.pwdInput.nativeElement.focus();
+      this.pwdInput().nativeElement.focus();
     }
   }
 
-  validarNumeros(e) {
-    var key = window.event ? e.which : e.keyCode;
-    if (key < 48 || key > 57) {
-      // Usando la definición del DOM level 2, "return" NO funciona.
+  validateKeyNumbers(e: KeyboardEvent): void {
+    const allowedKeys = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Tab'];
+
+    if (!/^\d$/.test(e.key) && !allowedKeys.includes(e.key)) {
       e.preventDefault();
     }
   }

@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, input, OnInit } from '@angular/core';
+import { Component, input, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MovieService, RuntimePipe } from '@cuevana-commons';
 import { debounceTime, Subscription } from 'rxjs';
@@ -12,7 +12,7 @@ import { debounceTime, Subscription } from 'rxjs';
 })
 export class CardMovieComponent implements OnInit {
   readonly movie = input<any>({});
-  details: any;
+  readonly details = signal<any>(null);
   subscription: Subscription;
 
   constructor(private movieService: MovieService) { }
@@ -24,11 +24,11 @@ export class CardMovieComponent implements OnInit {
   enter() {
     this.leave();
 
-    if (!this.details) {
+    if (!this.details()) {
       this.subscription = this.movieService.details(this.movie().id, this.movie().media_type)
         .pipe(debounceTime(1000))
         .subscribe(res => {
-          this.details = res;
+          this.details.set(res);
         });
     }
   }

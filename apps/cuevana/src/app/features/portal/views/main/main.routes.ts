@@ -16,7 +16,7 @@ export const routes: Routes = [
         component: HomeComponent
       },
       {
-        path: 'categoria/:id',
+        path: 'categoria/:id/:name',
         component: PortalCategoryComponent
       },
       {

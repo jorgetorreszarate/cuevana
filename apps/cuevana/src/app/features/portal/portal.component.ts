@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterOutlet } from '@angular/router';
 import { FooterComponent, HeaderComponent } from './commons/components';
 import { GeneralService } from './commons/services';
@@ -11,14 +11,12 @@ import { GeneralService } from './commons/services';
 })
 export class PortalComponent implements OnInit {
 
-  constructor(
-    private activatedRoute: ActivatedRoute,
-    private generalService: GeneralService
-  ) { }
+  readonly activatedRoute = inject(ActivatedRoute);
+  readonly generalService = inject(GeneralService);
 
   ngOnInit() {
     const data = this.activatedRoute.snapshot.data;
-    console.log("Data extraida del resolver", data);
+    console.log("Resolver", data);
     this.generalService.$genres = data.genres;
   }
 

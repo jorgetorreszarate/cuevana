@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Event, NavigationStart, Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { ClickOutDirective, MovieService } from '@cuevana-commons';
+import { ClickOutDirective, MovieService, Utils } from '@cuevana-commons';
 import { of } from 'rxjs';
 import { catchError, debounceTime, distinctUntilChanged, filter, map, switchMap, tap } from 'rxjs/operators';
 import { CardMovieSmallComponent } from '../card-movie-small/card-movie-small.component';
@@ -15,35 +15,34 @@ import { CardMovieSmallComponent } from '../card-movie-small/card-movie-small.co
 export class HeaderComponent implements OnInit {
   searchControl = new FormControl();
 
-  generos = [];
-  listSearch = [];
-  isLoadingSearch: boolean;
-  isShow: boolean;
-  toggleMenu: boolean;
+  readonly genres = signal<Array<any>>([]);
+  readonly listSearch = signal<Array<any>>([]);
+  readonly isLoadingSearch = signal<boolean>(false);
+  readonly isShow = signal<boolean>(false);
+  readonly toggleMenu = signal<boolean>(false);
 
-  constructor(
-    private movieService: MovieService,
-    private router: Router,
-    private activatedRoute: ActivatedRoute
-  ) { }
+  readonly movieService = inject(MovieService);
+  readonly router = inject(Router);
+  readonly activatedRoute = inject(ActivatedRoute);
 
   ngOnInit() {
-    this.generos = this.activatedRoute.snapshot.data.genres || [];
+    const genres = this.activatedRoute.snapshot.data.genres || [];
+    this.genres.set(genres);
 
     this.searchControl.valueChanges
       .pipe(
         tap(() => {
-          this.listSearch = [];
-          this.isLoadingSearch = false;
-          this.isShow = false;
+          this.listSearch.set([]);
+          this.isLoadingSearch.set(false);
+          this.isShow.set(false);
         })
 
         // Si la longitud del carácter es mayor que 1
         , filter(value => value?.length > 1)
 
         , tap(() => {
-          this.isShow = true;
-          this.isLoadingSearch = true;
+          this.isShow.set(true);
+          this.isLoadingSearch.set(true);
         })
 
         // Tiempo en milisegundos entre eventos clave
@@ -63,30 +62,22 @@ export class HeaderComponent implements OnInit {
 
         // subscription for response
       ).subscribe((res: any[]) => {
-        this.isLoadingSearch = false;
-        this.listSearch = res;
+        this.isLoadingSearch.set(false);
+        this.listSearch.set(res);
       });
 
     this.events();
   }
 
   submit() {
-    this.listSearch = [];
+    this.listSearch.set([]);
     this.router.navigate(['/buscar'], { queryParams: { s: this.searchControl.value } });
     this.searchControl.reset();
   }
 
-  /* @HostListener('document:click', ['$event.target'])
-  outSuggest(targetElement: any) {
-    if (!document.querySelector('.search')?.contains(targetElement) &&
-      !targetElement.classList.contains('search')) {
-      this.isShow = false;
-    }
-  } */
-
   toggle() {
-    this.toggleMenu = !this.toggleMenu;
-    if (this.toggleMenu) {
+    this.toggleMenu.update(value => !value);
+    if (this.toggleMenu()) {
       document.body.classList.add('open');
     } else {
       document.body.classList.remove('open');
@@ -96,11 +87,11 @@ export class HeaderComponent implements OnInit {
   events() {
     this.router.events.subscribe((event: Event) => {
       if (event instanceof NavigationStart) {
-        if (!this.toggleMenu) {
+        if (!this.toggleMenu()) {
           return;
         }
 
-        this.toggleMenu = false;
+        this.toggleMenu.set(false);
         document.body.classList.remove('open');
       }
     });

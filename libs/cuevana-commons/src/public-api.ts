@@ -9,3 +9,4 @@ export * from './lib/interceptors/token.interceptor';
 export * from './lib/pipes/runtime.pipe';
 export * from './lib/resolvers/init.resolver';
 export * from './lib/services/session.service';
+export * from './lib/utils/utils';

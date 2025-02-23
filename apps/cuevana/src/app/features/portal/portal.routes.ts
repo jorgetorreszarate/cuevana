@@ -17,6 +17,10 @@ export const routes: Routes = [
 				path: 'detalle/:id/:type',
 				component: PortalDetailComponent
 			},
+			{
+				path: 'detalle/:id/:type/:detail',
+				component: PortalDetailComponent
+			},
 		]
 	},
 ];

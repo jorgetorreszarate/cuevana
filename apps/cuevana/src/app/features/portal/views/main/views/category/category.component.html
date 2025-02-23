@@ -1,9 +1,11 @@
 <div id="movies_container">
   <div class="row">
     <div class="col">
-      <h2 class="mb-4">{{genre || 'Sin categoría'}}</h2>
-      <app-list-movies [movies]="movies" (changePage)="goToPage($event)" [isLoading]="isLoading">
-      </app-list-movies>
+      <h2 class="mb-4">{{ genre() || "Sin categoría" }}</h2>
+      <app-list-movies
+        [movies]="movies()"
+        (changePage)="goToPage($event)"
+        [isLoading]="isLoading()"></app-list-movies>
     </div>
   </div>
 </div>

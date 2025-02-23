@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MovieService } from '@cuevana-commons';
 import { ListMoviesComponent } from '../../../../commons/components';
@@ -10,18 +10,16 @@ import { ListMoviesComponent } from '../../../../commons/components';
   imports: [ListMoviesComponent]
 })
 export class PortalSearchComponent implements OnInit, OnDestroy {
-  keywords: string;
-  movies: any = {};
+  readonly keywords = signal<string>('');
+  readonly movies = signal<any>({});
   carousel: HTMLElement;
 
-  constructor(
-    private activatedRoute: ActivatedRoute,
-    private movieService: MovieService
-  ) { }
+  readonly activatedRoute = inject(ActivatedRoute);
+  readonly movieService = inject(MovieService);
 
   ngOnInit() {
     this.activatedRoute.queryParamMap.subscribe(params => {
-      this.keywords = params.get('s');
+      this.keywords.set(params.get('s'));
       this.goToPage(1);
     });
 
@@ -32,9 +30,10 @@ export class PortalSearchComponent implements OnInit, OnDestroy {
 
   goToPage(page: number) {
     // console.log(page, this.keywords);
-    this.movieService.search(this.keywords, page).subscribe(res => {
-      this.movies = res;
-    });
+    this.movieService.search(this.keywords(), page)
+      .subscribe(res => {
+        this.movies.set(res);
+      });
   }
 
   ngOnDestroy(): void {

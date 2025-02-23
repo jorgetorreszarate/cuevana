@@ -1,31 +1,46 @@
-<header [class.open]="toggleMenu">
+<header [class.open]="toggleMenu()">
   <div class="container">
     <div class="row">
       <div class="col d-flex align-items-center justify-content-between">
         <figure class="logo">
           <a routerLink="/">
-            <img src="./assets/logo.png" alt="">
+            <img
+              src="./assets/logo.png"
+              alt="" />
           </a>
         </figure>
-        <span class="MenuBtn" data-tgl="aa-wp" (click)="toggle()">
-          <i></i><i></i><i></i>
+        <span
+          class="MenuBtn"
+          data-tgl="aa-wp"
+          (click)="toggle()">
+          <i></i>
+          <i></i>
+          <i></i>
         </span>
         <div class="right">
-          <div class="search" clickOut (clickOutside)="isShow = false">
+          <div
+            class="search"
+            clickOut
+            (outside)="isShow.set(false)">
             <form (ngSubmit)="submit()">
               <span class="form-icon">
-                <input type="text" name="s" placeholder="Buscar películas..." autocomplete="off" (focus)="isShow = true"
-                  [formControl]="searchControl">
+                <input
+                  type="text"
+                  name="s"
+                  placeholder="Buscar películas..."
+                  autocomplete="off"
+                  (focus)="isShow.set(true)"
+                  [formControl]="searchControl" />
                 <button type="submit"><i class="fa fa-search"></i></button>
-                @if (isShow && listSearch.length || isLoadingSearch) {
+                @if ((isShow() && listSearch().length) || isLoadingSearch()) {
                   <div class="ep-autosuggest">
-                    @if (isLoadingSearch) {
+                    @if (isLoadingSearch()) {
                       <div class="p-2">Buscando...</div>
-                    }
-                    @if (!isLoadingSearch) {
-                      @for (item of listSearch; track item) {
-                        <app-card-movie-small [movie]="item">
-                        </app-card-movie-small>
+                    } @else {
+                      @for (item of listSearch(); track item.id) {
+                        <app-card-movie-small
+                          [movie]="item"
+                          (click)="isShow.set(false)" />
                       }
                     }
                   </div>
@@ -34,20 +49,31 @@
             </form>
           </div>
           <div class="login">
-            <button class="btn btn-link" routerLink="/auth/sign-in">Entrar</button>
+            <button
+              class="btn btn-link"
+              routerLink="/auth/sign-in">
+              Entrar
+            </button>
             <button class="btn btn-primary">Registro</button>
           </div>
           <nav class="menu">
             <ul class="clearfix">
               <li class="menu-item">
-                <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Inicio</a>
+                <a
+                  routerLink="/"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{exact: true}">
+                  Inicio
+                </a>
               </li>
               <li class="menu-item has-children">
                 <a>Géneros</a>
                 <ul class="sub-menu">
-                  @for (item of generos; track item) {
+                  @for (item of genres(); track item.id) {
                     <li class="menu-item">
-                      <a [routerLink]="['/categoria', item.id]">{{item.name}}</a>
+                      <a [routerLink]="['/categoria', item.id, item.path]">
+                        {{ item.name }}
+                      </a>
                     </li>
                   }
                 </ul>
@@ -73,7 +99,11 @@
                 </ul>
               </li>
               <li class="menu-item">
-                <a routerLink="/serie" routerLinkActive="active">Series</a>
+                <a
+                  routerLink="/serie"
+                  routerLinkActive="active">
+                  Series
+                </a>
               </li>
             </ul>
           </nav>

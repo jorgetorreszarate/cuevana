@@ -1,13 +1,11 @@
-import { Directive, ElementRef, HostListener, output } from '@angular/core';
+import { Directive, ElementRef, HostListener, inject, output } from '@angular/core';
 
 @Directive({
   selector: '[clickOut]'
 })
 export class ClickOutDirective {
-
-  constructor(private elementRef: ElementRef) { }
-
   readonly outside = output<HTMLElement>();
+  readonly elementRef = inject(ElementRef<HTMLElement>);
 
   @HostListener('document:click', ['$event.target'])
   onMouseEnter(targetElement: HTMLElement) {

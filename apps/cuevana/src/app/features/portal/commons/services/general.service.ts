@@ -7,8 +7,6 @@ import { Observable, ReplaySubject } from "rxjs";
 export class GeneralService {
   private genres: ReplaySubject<any> = new ReplaySubject<any>(1);
 
-  constructor() { }
-
   get $genres(): Observable<any> {
     return this.genres.asObservable();
   }

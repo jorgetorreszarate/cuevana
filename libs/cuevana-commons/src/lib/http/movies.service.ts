@@ -1,81 +1,84 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
+import { Utils } from '@cuevana-commons';
 import { environment } from 'apps/cuevana/src/environments/environment';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable()
 export class MovieService {
-    apiKey = environment.themoviedbKey;
-    endpoint = environment.themoviedbAPI;
+	private readonly apiKey = environment.themoviedbKey;
+	private readonly endpoint = environment.themoviedbAPI;
+	private readonly http = inject(HttpClient);
 
-    constructor(private http: HttpClient) { }
+	private get<T>(url: string, params: Record<string, any> = {}): Observable<T> {
+		const httpParams = new HttpParams({ fromObject: { ...params, api_key: this.apiKey, language: 'es' } });
+		return this.http.get<T>(`${this.endpoint}${url}`, { params: httpParams });
+	}
 
-    genres(): Observable<any> {
-        return this.http.get(`${this.endpoint}/genre/movie/list?api_key=${this.apiKey}&language=es`)
-            .pipe(
-                map((res: any) => res.genres)
-            );
-    }
+	private transformResults(res: any): any {
+		return {
+			...res,
+			results: res.results?.map((item: any) => ({ ...item, path: Utils.slugify(item.title) })) || [],
+		};
+	}
 
-    search(query: string, page: number = 1): Observable<any> {
-        const params = new HttpParams()
-            .set('api_key', this.apiKey)
-            .set('query', query)
-            .set('page', page)
-            .set('language', 'es');
+	private fetchMovies(endpoint: string, page: number = 1): Observable<any> {
+		return this.get(endpoint, { page }).pipe(map(this.transformResults));
+	}
 
-        return this.http.get(`${this.endpoint}/search/movie`, { params });
-    }
+	private transformGenres(res: any): Array<any> {
+		return res.genres?.map((item: any) => (
+			{
+				...item,
+				path: Utils.slugify(item.name)
+			}
+		)) || [];
+	}
 
-    discover(requestBody: any): Observable<any> {
-        requestBody = {
-            ...requestBody,
-            api_key: this.apiKey,
-            language: 'es',
-            sort_by: 'popularity.desc',
-            include_adult: false,
-            page: requestBody.page || 1,
-            // with_genres: requestBody.with_genres
-        };
+	genres(): Observable<Array<any>> {
+		return this.get('/genre/movie/list').pipe(map(this.transformGenres));
+	}
 
-        let params = new HttpParams();
+	search(query: string, page: number = 1): Observable<any> {
+		return this.get('/search/movie', { query, page }).pipe(map(this.transformResults));
+	}
 
-        for (const key in requestBody) {
-            params = params.set(key, requestBody[key]);
-        }
+	discover(requestBody: any): Observable<any> {
+		return this.get('/discover/movie', {
+			...requestBody,
+			sort_by: 'popularity.desc',
+			include_adult: false,
+			page: requestBody.page || 1,
+		})
+			.pipe(map(this.transformResults));
+	}
 
-        // console.log(params.toString());
+	trending(): Observable<any> {
+		return this.fetchMovies('/trending/all/week');
+	}
 
-        return this.http.get(`
-        https://api.themoviedb.org/3/discover/movie`, { params });
-    }
+	popular(page: number = 1): Observable<any> {
+		return this.fetchMovies('/movie/popular', page);
+	}
 
-    trending(): Observable<any> {
-        return this.http.get(`${this.endpoint}/trending/all/week?api_key=${this.apiKey}&language=es`);
-    }
+	rated(page: number = 1): Observable<any> {
+		return this.fetchMovies('/movie/top_rated', page);
+	}
 
-    popular(page: number = 1): Observable<any> {
-        return this.http.get(`${this.endpoint}/movie/popular?api_key=${this.apiKey}&language=es&page=${page}`);
-    }
+	playing(page: number = 1): Observable<any> {
+		return this.fetchMovies('/movie/now_playing', page);
+	}
 
-    rated(page: number = 1): Observable<any> {
-        return this.http.get(`${this.endpoint}/movie/top_rated?api_key=${this.apiKey}&language=es&page=${page}`);
-    }
+	upcoming(page: number = 1): Observable<any> {
+		return this.fetchMovies('/movie/upcoming', page);
+	}
 
-    playing(page: number = 1): Observable<any> {
-        return this.http.get(`${this.endpoint}/movie/now_playing?api_key=${this.apiKey}&language=es&page=${page}`);
-    }
+	details(id: number, type: string = 'movie'): Observable<any> {
+		return this.get(`/${type}/${id}`);
+	}
 
-    upcoming(page: number = 1): Observable<any> {
-        return this.http.get(`${this.endpoint}/movie/upcoming?api_key=${this.apiKey}&language=es&page=${page}`);
-    }
-
-    details(id: number, type: string = 'movie'): Observable<any> {
-        return this.http.get(`${this.endpoint}/${type}/${id}?api_key=${this.apiKey}&language=es`);
-    }
-
-    actors(id: number): Observable<any> {
-        return this.http.get(`${this.endpoint}/movie/${id}/credits?api_key=${this.apiKey}`);
-    }
+	actors(id: number): Observable<any> {
+		return this.get(`/movie/${id}/credits`);
+	}
 }

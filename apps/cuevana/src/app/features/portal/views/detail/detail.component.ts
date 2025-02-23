@@ -1,5 +1,5 @@
 import { DatePipe, SlicePipe } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MovieService, RuntimePipe } from '@cuevana-commons';
 
@@ -10,8 +10,8 @@ import { MovieService, RuntimePipe } from '@cuevana-commons';
   imports: [SlicePipe, DatePipe, RuntimePipe]
 })
 export class PortalDetailComponent implements OnInit {
-  movie: any = {};
-  actors = [];
+  readonly movie = signal<any>({});
+  readonly actors = signal<Array<any>>([]);
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -28,11 +28,11 @@ export class PortalDetailComponent implements OnInit {
 
   getDetail(id: number, type: string) {
     this.movieService.details(id, type).subscribe(res => {
-      this.movie = res;
+      this.movie.set(res);
     });
 
     this.movieService.actors(id).subscribe(res => {
-      this.actors = res.cast;
+      this.actors.set(res.cast);
     });
   }
 

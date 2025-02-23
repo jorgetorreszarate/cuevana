@@ -1,18 +1,21 @@
 <div class="login">
-  <div class="login-left">
-  </div>
+  <div class="login-left"></div>
   <div class="login-right">
-    <form [formGroup]="form" class="login-form">
+    <form
+      [formGroup]="form"
+      class="login-form">
       <h3 class="title">Iniciar Sesión</h3>
       <p class="description">Ingresa y conoce nuestra experiencia web.</p>
-      @if (!isValid) {
+      @if (!isValid()) {
         <div class="form-group">
           <label for="">Tipo de documento *</label>
           <div class="input-group">
             <div class="input-group-text">
               <i class="fa fa-id-card-o"></i>
             </div>
-            <select class="form-control" formControlName="tipodoc">
+            <select
+              class="form-control"
+              formControlName="tipodoc">
               <option value="DNI">DNI</option>
               <option value="CE">Carnet de Extranjería</option>
               <option value="PSP">Pasaporte</option>
@@ -25,31 +28,42 @@
             <div class="input-group-text">
               <i class="fa fa-hashtag"></i>
             </div>
-            <input type="text" class="form-control textfield" formControlName="numdoc"
+            <input
+              type="text"
+              class="form-control textfield"
+              formControlName="numdoc"
               [class.is-invalid]="form.get('numdoc').errors && form.get('numdoc').touched"
-              [maxlength]="form.get('tipodoc').value == 'DNI'?8:15" (keypress)="validarNumeros($event)"
-              (keyup.enter)="validar()">
+              [maxlength]="form.get('tipodoc').value == 'DNI' ? 8 : 15"
+              (keypress)="validateKeyNumbers($event)"
+              (keyup.enter)="validate()" />
           </div>
         </div>
-      }
-      @if (isValid) {
+      } @else {
         <div class="form-group">
           <label for="">Password *</label>
           <div class="input-group">
             <div class="input-group-text">
               <i class="fa fa-key"></i>
             </div>
-            <input #pwdInput type="password" class="form-control" formControlName="password" (keyup.enter)="validar()">
+            <input
+              #pwdInput
+              type="password"
+              class="form-control"
+              formControlName="password"
+              (keyup.enter)="validate()" />
           </div>
         </div>
       }
 
-      <button class="btn btn-warning btn-block mt-5" (click)="validar()" [disabled]="form.invalid || isLoading"
+      <button
+        class="btn btn-warning btn-block mt-5"
+        (click)="validate()"
+        [disabled]="form.invalid || isLoading()"
         [class.btn-light]="form.invalid">
-        @if (isLoading) {
+        @if (isLoading()) {
           <i class="fa fa-spin fa-circle-o-notch"></i>
         }
-        {{isValid?'Ingresar': 'Siguiente'}}
+        {{ isValid() ? "Ingresar" : "Siguiente" }}
       </button>
     </form>
   </div>

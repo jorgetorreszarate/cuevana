@@ -1,9 +1,15 @@
 <div id="carousel-wrapper">
-  <div id="carousel-main" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000"
-    [class.d-none]="isLoadingTrend">
+  <div
+    id="carousel-main"
+    class="carousel slide"
+    data-bs-ride="carousel"
+    data-bs-interval="5000"
+    [class.d-none]="isLoadingTrend()">
     <div class="carousel-inner">
-      @for (item of trending; track item.id; let i = $index) {
-        <div class="carousel-item" [class.active]="i == 0"
+      @for (item of trending(); track item.id; let i = $index) {
+        <div
+          class="carousel-item"
+          [class.active]="i == 0"
           data-bs-interval="10000">
           <div class="container">
             <div class="row">
@@ -11,25 +17,31 @@
                 <div class="carousel-container">
                   <a>
                     <div class="title">
-                      {{item.title || item.name}}
-                      <span class="Qlty align-middle">{{item.media_type == 'movie'? 'PELÍCULA': 'SERIE'}}</span>
+                      {{ item.title || item.name }}
+                      <span class="Qlty align-middle">{{ item.media_type == "movie" ? "PELÍCULA" : "SERIE" }}</span>
                     </div>
                   </a>
                   <p class="Info">
-                    <span class="Vote">{{item.vote_average}}</span>
+                    <span class="Vote">{{ item.vote_average }}</span>
                     <span class="Time">1h 56m</span>
-                    <span class="Date">{{item.release_date | date: 'yyyy'}}</span>
+                    <span class="Date">{{ item.release_date | date: "yyyy" }}</span>
                     <span class="Qlty">HD</span>
                   </p>
-                  <p class="description">{{item.overview}}</p>
-                  <a class="btn btn-primary btn-lg btn-rounded" [routerLink]="['/detalle', item.id, item.media_type]">
-                    <i class="fa fa-play"></i> Ver {{item.media_type == 'movie'? 'Película': 'Serie'}}
+                  <p class="description">{{ item.overview }}</p>
+                  <a
+                    class="btn btn-primary btn-lg btn-rounded"
+                    [routerLink]="['/detalle', item.id, item.media_type, item.path]">
+                    <i class="fa fa-play"></i>
+                    Ver {{ item.media_type == "movie" ? "Película" : "Serie" }}
                   </a>
                 </div>
               </div>
             </div>
           </div>
-          <img src="https://image.tmdb.org/t/p/w1280{{item.backdrop_path}}" alt="" draggable="false">
+          <img
+            src="https://image.tmdb.org/t/p/w1280{{ item.backdrop_path }}"
+            alt=""
+            draggable="false" />
         </div>
       }
     </div>
@@ -37,16 +49,21 @@
       <div class="row">
         <div class="col">
           <ol class="carousel-indicators">
-            @for (item of trending; track item.id; let i = $index) {
-              <li data-bs-target="#carousel-main" [attr.data-bs-slide-to]="i" [class.active]="i == 0"></li>
+            @for (item of trending(); track item.id; let i = $index) {
+              <li
+                data-bs-target="#carousel-main"
+                [attr.data-bs-slide-to]="i"
+                [class.active]="i == 0"></li>
             }
           </ol>
         </div>
       </div>
     </div>
   </div>
-  @if (isLoadingTrend) {
-    <app-skeleton height="475px" class="mb-3"></app-skeleton>
+  @if (isLoadingTrend()) {
+    <app-skeleton
+      height="475px"
+      class="mb-3"></app-skeleton>
   }
 </div>
 <!-- Sections -->
@@ -58,23 +75,29 @@
     <div class="col-md-3">
       <div class="widget-title">TOP ESTRENOS</div>
       <ul class="MovieList top">
-        @if (!isLoadingRated) {
-          @for (item of rated; track item.id) {
+        @if (!isLoadingRated()) {
+          @for (item of rated(); track item.id) {
             <li class="mb-3">
               <app-card-movie-small [movie]="item"></app-card-movie-small>
             </li>
           }
-        }
-        @if (isLoadingRated) {
+        } @else {
           @for (item of [].constructor(8); track $index) {
             <li class="mb-3">
               <div class="row">
                 <div class="col-4">
-                  <app-skeleton height="80px" radius="0.5em"></app-skeleton>
+                  <app-skeleton
+                    height="80px"
+                    radius="0.5em"></app-skeleton>
                 </div>
                 <div class="col">
-                  <app-skeleton height="20px" radius="0.5em"></app-skeleton>
-                  <app-skeleton height="20px" radius="0.5em" class="mt-3"></app-skeleton>
+                  <app-skeleton
+                    height="20px"
+                    radius="0.5em"></app-skeleton>
+                  <app-skeleton
+                    height="20px"
+                    radius="0.5em"
+                    class="mt-3"></app-skeleton>
                 </div>
               </div>
             </li>
